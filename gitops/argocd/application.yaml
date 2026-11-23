@@ -7,7 +7,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/YOUR_GITHUB_USER/lab4-devops.git
+    repoURL: https://github.com/deep1190/Devops-Lab-4.git
     targetRevision: main
     path: gitops/k8s
   destination:

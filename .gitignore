@@ -1,7 +1,35 @@
+# Python
 __pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Testing and coverage
 .pytest_cache/
 .coverage
-*.pyc
+.coverage.*
+htmlcov/
+
+# Databases
 *.db
+*.sqlite
+*.sqlite3
+
+# Environment and secrets
 .env
+.env.*
+!.env.example
 *.pem
+*.key
+
+# IDE and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

@@ -17,6 +17,8 @@ import re
 import shutil
 import subprocess
 import tempfile
+import stat
+import time
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MANIFEST = os.path.join(ROOT, "gitops", "k8s", "deployment.yaml")
@@ -88,4 +90,17 @@ log("\nGit history (audit trail):\n" + git(repo, "log", "--oneline"))
 
 with open(OUT, "w") as f:
     f.write("\n".join(lines) + "\n")
-shutil.rmtree(work)
+
+
+def handle_remove_readonly(func, path, exc_info):
+    os.chmod(path, stat.S_IWRITE)
+    func(path)
+
+for attempt in range(5):
+    try:
+        shutil.rmtree(work, onerror=handle_remove_readonly)
+        break
+    except PermissionError:
+        time.sleep(1)
+else:
+    print(f"WARNING: Could not remove temporary directory: {work}")

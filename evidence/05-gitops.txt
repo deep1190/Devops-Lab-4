@@ -1,22 +1,22 @@
 == GitOps reconciliation ==
 1) Initial sync
-  [reconcile:poll] DIFF image: live=None desired='ghcr.io/YOUR_GITHUB_USER/lab4-notes-app:1.0.0' -> applying
+  [reconcile:poll] DIFF image: live=None desired='ghcr.io/deep1190/lab4-notes-app:1.0.0' -> applying
   [reconcile:poll] DIFF replicas: live=None desired=3 -> applying
-  [reconcile:poll] live now == Git (c0985e4)
+  [reconcile:poll] live now == Git (8621f4a)
 2) New release via Git commit (image tag 1.0.0 -> 2.0.0)
-  [reconcile:poll] DIFF image: live='ghcr.io/YOUR_GITHUB_USER/lab4-notes-app:1.0.0' desired='ghcr.io/YOUR_GITHUB_USER/lab4-notes-app:2.0.0' -> applying
-  [reconcile:poll] live now == Git (14b1efc)
+  [reconcile:poll] DIFF image: live='ghcr.io/deep1190/lab4-notes-app:1.0.0' desired='ghcr.io/deep1190/lab4-notes-app:2.0.0' -> applying
+  [reconcile:poll] live now == Git (3ced6c9)
 3) Drift: manual change on the cluster (replicas 3 -> 10), nothing committed
-  live (tampered): {'image': 'ghcr.io/YOUR_GITHUB_USER/lab4-notes-app:2.0.0', 'replicas': 10}
+  live (tampered): {'image': 'ghcr.io/deep1190/lab4-notes-app:2.0.0', 'replicas': 10}
   [reconcile:selfHeal] DIFF replicas: live=10 desired=3 -> applying
-  [reconcile:selfHeal] live now == Git (14b1efc)
+  [reconcile:selfHeal] live now == Git (3ced6c9)
 4) Rollback via `git revert HEAD`
-  [reconcile:poll] DIFF image: live='ghcr.io/YOUR_GITHUB_USER/lab4-notes-app:2.0.0' desired='ghcr.io/YOUR_GITHUB_USER/lab4-notes-app:1.0.0' -> applying
-  [reconcile:poll] live now == Git (1d84c77)
-  final live state: {'image': 'ghcr.io/YOUR_GITHUB_USER/lab4-notes-app:1.0.0', 'replicas': 3}
+  [reconcile:poll] DIFF image: live='ghcr.io/deep1190/lab4-notes-app:2.0.0' desired='ghcr.io/deep1190/lab4-notes-app:1.0.0' -> applying
+  [reconcile:poll] live now == Git (4425147)
+  final live state: {'image': 'ghcr.io/deep1190/lab4-notes-app:1.0.0', 'replicas': 3}
 RESULT: cluster state always converged to Git; every change is an auditable commit.
 
 Git history (audit trail):
-1d84c77 Revert "release: bump image to 2.0.0"
-14b1efc release: bump image to 2.0.0
-c0985e4 initial desired state
+4425147 Revert "release: bump image to 2.0.0"
+3ced6c9 release: bump image to 2.0.0
+8621f4a initial desired state

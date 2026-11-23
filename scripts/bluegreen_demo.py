@@ -25,9 +25,10 @@ def start_app(port, version, color, extra=None):
     env = dict(os.environ, APP_VERSION=version, APP_COLOR=color, PORT=str(port),
                DB_PATH=f"/tmp/bg_{color}.db", **(extra or {}))
     return subprocess.Popen(
-        [sys.executable, "-m", "gunicorn", "-b", f"127.0.0.1:{port}", "app:app"],
-        cwd=os.path.join(ROOT, "app"), env=env,
-        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    [sys.executable, "-m", "waitress",
+     f"--listen=127.0.0.1:{port}", "app:app"],
+    cwd=os.path.join(ROOT, "app"), env=env,
+    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 
 def get(path):

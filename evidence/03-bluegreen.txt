@@ -1,10 +1,10 @@
 == Blue-Green zero-downtime switch ==
 Live (blue) = v1.0.0 ; Idle (green) = v2.0.0 already deployed and health-checked
-CUTOVER at t+1.49s: traffic 100% blue -> 100% green
-ROLLBACK at t+2.99s: traffic back to blue
-Total requests during test : 335
+CUTOVER at t+1.39s: traffic 100% blue -> 100% green
+ROLLBACK at t+2.90s: traffic back to blue
+Total requests during test : 189
 Failed requests            : 0
 Versions seen before switch: ['1.0.0']
 Versions seen after switch : ['2.0.0']
-Versions seen after rollback: ['1.0.0']
+Versions seen after rollback: ['1.0.0', '2.0.0']
 RESULT: ZERO-DOWNTIME CONFIRMED
