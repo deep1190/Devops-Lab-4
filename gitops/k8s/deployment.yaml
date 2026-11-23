@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: app
-          image: ghcr.io/deep1190/lab4-notes-app:1.0.0   # CI bumps this tag via a Git commit
+          image: ghcr.io/deep1190/lab4-notes-app:0fb5280d91504e2370a65a51e3be2e71fc7de08b
           ports: [{containerPort: 5000}]
           env:
             - {name: APP_VERSION, value: "1.0.0"}
