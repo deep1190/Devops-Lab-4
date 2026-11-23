@@ -1,0 +1,28 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.18, pytest-8.3.3, pluggy-1.6.0 -- /usr/local/bin/python
+cachedir: .pytest_cache
+rootdir: /home/claude/lab4-devops
+configfile: pytest.ini
+testpaths: tests
+plugins: platformdirs-4.13.5, anyio-4.15.1, cov-5.0.0
+collecting ... collected 9 items
+
+tests/test_integration.py::test_note_round_trip PASSED                   [ 11%]
+tests/test_integration.py::test_notes_persist_in_database_file PASSED    [ 22%]
+tests/test_integration.py::test_multiple_notes_ordered PASSED            [ 33%]
+tests/test_unit.py::test_health_ok PASSED                                [ 44%]
+tests/test_unit.py::test_version_reports_env PASSED                      [ 55%]
+tests/test_unit.py::test_add_note_requires_text PASSED                   [ 66%]
+tests/test_unit.py::test_add_note_rejects_bad_json PASSED                [ 77%]
+tests/test_unit.py::test_token_required_when_configured PASSED           [ 88%]
+tests/test_unit.py::test_token_accepted PASSED                           [100%]
+
+---------- coverage: platform linux, python 3.13.18-final-0 ----------
+Name         Stmts   Miss  Cover
+--------------------------------
+app/app.py      44      1    98%
+--------------------------------
+TOTAL           44      1    98%
+
+
+============================== 9 passed in 0.37s ===============================

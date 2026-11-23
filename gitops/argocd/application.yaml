@@ -1,0 +1,20 @@
+# Argo CD watches Git and continuously reconciles the cluster to match it.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: notes-app
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/YOUR_GITHUB_USER/lab4-devops.git
+    targetRevision: main
+    path: gitops/k8s
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: lab4
+  syncPolicy:
+    automated:
+      prune: true       # delete things removed from Git
+      selfHeal: true    # revert manual kubectl changes (drift)
+    syncOptions: [CreateNamespace=true]

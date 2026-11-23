@@ -1,0 +1,84 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  IMAGE: ghcr.io/${{ github.repository_owner }}/lab4-notes-app
+
+jobs:
+  # ---- Gate 0: no secrets in the repo ----
+  secret-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python scripts/scan_secrets.py --selftest
+      - run: python scripts/scan_secrets.py
+
+  # ---- Gate 1: unit tests ----
+  unit-tests:
+    runs-on: ubuntu-latest
+    needs: secret-scan
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12", cache: pip}
+      - run: pip install -r requirements-dev.txt
+      - run: pytest tests/test_unit.py -v
+
+  # ---- Gate 2: integration tests (app + database), with coverage threshold ----
+  integration-tests:
+    runs-on: ubuntu-latest
+    needs: unit-tests
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12", cache: pip}
+      - run: pip install -r requirements-dev.txt
+      - run: pytest tests/test_integration.py -v
+      - run: pytest --cov=app --cov-fail-under=90      # whole suite must keep >=90% coverage
+
+  # ---- Build only if BOTH gates passed ----
+  build-image:
+    runs-on: ubuntu-latest
+    needs: [unit-tests, integration-tests]
+    if: github.ref == 'refs/heads/main'
+    permissions: {contents: read, packages: write}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v6
+        with:
+          context: ./app
+          push: true
+          tags: ${{ env.IMAGE }}:${{ github.sha }}
+
+  # ---- Deploy = GitOps: CI commits the new image tag; Argo CD reconciles the cluster ----
+  deploy-gitops:
+    runs-on: ubuntu-latest
+    needs: build-image
+    if: github.ref == 'refs/heads/main'
+    permissions: {contents: write}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Bump image tag in Git (single source of truth)
+        run: |
+          sed -i "s|image: .*lab4-notes-app:.*|image: ${IMAGE}:${GITHUB_SHA}|" gitops/k8s/deployment.yaml
+          git config user.name "ci-bot"; git config user.email "ci-bot@users.noreply.github.com"
+          git commit -am "deploy: ${GITHUB_SHA::7}" && git push
+
+  # ---- Optional: pull secrets from Vault with short-lived AppRole token ----
+  # Requires a reachable Vault and repo secrets VAULT_ADDR / VAULT_ROLE_ID / VAULT_SECRET_ID.
+  # - uses: hashicorp/vault-action@v3
+  #   with:
+  #     url: ${{ secrets.VAULT_ADDR }}
+  #     method: approle
+  #     roleId: ${{ secrets.VAULT_ROLE_ID }}
+  #     secretId: ${{ secrets.VAULT_SECRET_ID }}
+  #     secrets: secret/data/notes-app api-token | API_TOKEN

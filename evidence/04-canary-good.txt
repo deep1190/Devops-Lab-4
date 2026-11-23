@@ -1,0 +1,8 @@
+== Canary rollout (good release) ==
+Rollback triggers: canary error rate > 5% OR avg latency > 500 ms
+ step  canary%  canary_reqs  canary_err%  stable_err%  canary_ms  decision
+    1       5%           13        0.0%        0.0%        1.7  continue
+    2      25%           62        0.0%        0.0%        1.1  continue
+    3      50%          152        0.0%        0.0%        0.8  continue
+    4     100%          300        0.0%        0.0%        0.9  PROMOTE
+OUTCOME: PROMOTED

@@ -1,0 +1,13 @@
+== Disaster recovery demo ==
+Objectives: RTO <= 60s, RPO <= 5 min (scheduled backup)
+1) Primary running with 5 notes
+2) BACKUP: backup ok: <tmp>/backups/notes-20261123-181138.db
+3) Two more notes written after the backup (these are at risk)
+4) DISASTER: primary process killed and its database file destroyed
+5) RESTORE: <tmp>/backups/notes-20261123-181138.db: OK | integrity: ok | restored <tmp>/backups/notes-20261123-181138.db -> <tmp>/standby/notes.db
+6) FAILOVER: standby started on :5102 from the restored backup
+   Notes recovered: 5 of 7  ->  data lost (actual RPO impact): 2 notes
+   Measured RTO: 0.26s  (target 60s) -> MET
+   Corruption check: tampering with the backup must be rejected...
+   restore of tampered backup exit code = 1 (rejected, good)
+OBSERVATION: data written after the last backup is lost; shrink RPO with more frequent backups or replication.

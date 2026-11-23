@@ -1,0 +1,6 @@
+== Canary rollout (bad release) ==
+Rollback triggers: canary error rate > 5% OR avg latency > 500 ms
+ step  canary%  canary_reqs  canary_err%  stable_err%  canary_ms  decision
+    1       5%           15       46.7%        0.0%        1.2  ROLLBACK
+TRIGGER FIRED at 5% -> traffic returned to stable (100% blue). Blast radius: ~5% of users for one step.
+OUTCOME: ROLLED BACK
